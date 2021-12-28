@@ -11,7 +11,8 @@ SELECT
    COUNT(distinct(CASE WHEN md.sub_category = 17 then ku.id  else null end)) as total_koos_sports, 
    COUNT(distinct(CASE WHEN md.sub_category = 30 then ku.id   else null end)) as total_koos_education, 
    COUNT(distinct(CASE WHEN md.sub_category = 16 then ku.id   else null end)) as total_koos_health, 
-   COUNT(distinct(CASE WHEN md.sub_category = 12 then ku.id   else null end)) as total_koos_business,         COUNT(distinct(CASE WHEN md.sub_category = 11    then ku.id   else null end)) as total_koos_politics   
+   COUNT(distinct(CASE WHEN md.sub_category = 12 then ku.id   else null end)) as total_koos_business,         
+   COUNT(distinct(CASE WHEN md.sub_category = 11    then ku.id   else null end)) as total_koos_politics   
 FROM "glue-postgre-data"."ku" ku
 LEFT JOIN "glue-postgre-data"."koo_metadata" md
 ON (ku.id=md.koo_id)
