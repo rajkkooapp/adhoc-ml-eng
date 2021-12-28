@@ -30,15 +30,13 @@ GROUP BY 1,2,7,8
 )
 
 ,classified_source as (
-
-SELECT 
-tk.creator_id as creatorid,
+SELECT tk.creator_id as creatorid,
 COUNT(DISTINCT  tk.koo_id) total_classified_koos,
 COUNT(DISTINCT (CASE WHEN at.tag='Poems' then tk.koo_id  else null end)) as total_poems_koos,
-SUM(CASE WHEN at.tag='Poems' THEN imp.num_impressions ELSE 0 END) as num_poetry_impressions,
-SUM(CASE WHEN at.tag='Poems' THEN imp.num_likes ELSE 0 END) as num_poetry_likes,
-SUM(CASE WHEN at.tag='Poems' THEN imp.num_rekoos ELSE 0 END) as num_poetry_rekoos,
-SUM(CASE WHEN at.tag='Poems' THEN imp.num_shares  ELSE 0 END) as num_poetry_shares  
+sum(CASE WHEN at.tag='Poems'THEN imp.num_impressions ELSE NULL END) as num_poetry_impressions,
+sum(CASE WHEN at.tag='Poems'THEN  imp.num_likes ELSE NULL END) as num_poetry_likes,
+sum(CASE WHEN at.tag='Poems'THEN  imp.num_rekoos ELSE NULL END)as num_poetry_rekoos,
+sum(CASE WHEN at.tag='Poems'THEN  imp.num_shares ELSE NULL END)as num_poetry_shares 
 FROM "glue-postgre-data"."topic_koo_score" tk
 LEFT JOIN
 (
@@ -50,15 +48,16 @@ ON (tk.topic_id=at.id)
 LEFT JOIN 
 (
 SELECT creatorid,
+contentid,  
 SUM(CASE WHEN eventname ='Content_Impression'  THEN 1 ELSE 0 END) as num_impressions,
 SUM(CASE WHEN eventname = 'LikeKoo'  THEN 1 ELSE 0 END) as num_likes,
 SUM(CASE WHEN eventname IN ('ReKooWithComment','ReKooWithoutComment')  THEN 1 ELSE 0 END) as num_rekoos,
 SUM(CASE WHEN eventname  = 'ShareKoo'  THEN 1 ELSE 0 END) as num_shares  
 FROM "koo-analytics-data-store"."koo_impressions" 
-group by 1  
+group by 1,2  
 ) imp  
-ON (tk.creator_id = imp.creatorid)  
-WHERE tk.identified_language=0
+ON (tk.creator_id = imp.creatorid AND tk.koo_id = imp.contentid) 
+WHERE  tk.identified_language=0 
 AND date_format(from_unixtime(tk.created_at), '%Y-%m-%d')>='2021-12-05'
 AND date_format(from_unixtime(tk.created_at), '%Y-%m-%d')<='2021-12-19'  
 GROUP BY 1
