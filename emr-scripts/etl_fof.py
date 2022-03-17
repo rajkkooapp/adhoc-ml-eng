@@ -130,7 +130,6 @@ def main(argv):
     logger.info("Writing to output path 1 : " + output_path_1)
 
 
-
     fof_potential_df.write.parquet(output_path_1,mode="overwrite")
 
 
@@ -141,8 +140,6 @@ def main(argv):
 
 
     logger.info("Writing to output path 2 : " + output_path_2)
-
-    fof_ranked.show()
 
 
     fof_ranked.write.parquet(output_path_2,mode="overwrite")  
